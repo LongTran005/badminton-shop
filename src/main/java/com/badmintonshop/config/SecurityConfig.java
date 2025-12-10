@@ -1,5 +1,6 @@
 package com.badmintonshop.config;
 
+import com.badmintonshop.security.CustomAuthenticationFailureHandler;
 import com.badmintonshop.security.CustomUserDetailsService;
 // TODO: Uncomment when OAuth2 is configured
 // import com.badmintonshop.security.OAuth2UserService;
@@ -36,6 +37,7 @@ import javax.sql.DataSource;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final CustomAuthenticationFailureHandler authenticationFailureHandler;
     // TODO: Uncomment when OAuth2 is configured
     // private final OAuth2UserService oAuth2UserService;
     // private final OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -136,6 +138,7 @@ public class SecurityConfig {
                     "/search", "/compare",
                     "/cart/**",
                     "/login", "/register", "/forgot-password", "/reset-password",
+                    "/verify-email", "/resend-verification", "/verification-required",
                     "/oauth2/**",
                     "/static/**", "/css/**", "/js/**", "/images/**", "/fonts/**", "/vendor/**",
                     "/api/public/**",
@@ -154,7 +157,7 @@ public class SecurityConfig {
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .defaultSuccessUrl("/", false)
-                .failureUrl("/login?error=true")
+                .failureHandler(authenticationFailureHandler)
                 .usernameParameter("email")
                 .passwordParameter("password")
             )
