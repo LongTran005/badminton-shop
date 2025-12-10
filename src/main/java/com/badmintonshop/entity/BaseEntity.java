@@ -3,9 +3,7 @@ package com.badmintonshop.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -15,6 +13,9 @@ import java.time.LocalDateTime;
 /**
  * Base Entity với các trường audit và soft delete
  * Tất cả entity khác nên extends class này
+ * 
+ * Note: created_by và updated_by được quản lý riêng trong từng entity
+ * vì schema DB sử dụng FK tới bảng staff thay vì username String
  */
 @Getter
 @Setter
@@ -30,28 +31,12 @@ public abstract class BaseEntity implements Serializable {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private String createdBy;
-
-    @LastModifiedBy
-    @Column(name = "updated_by")
-    private String updatedBy;
-
     /**
      * Soft delete timestamp
      * NULL = active, NOT NULL = deleted
      */
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
-
-    /**
-     * Version for optimistic locking
-     * Prevents concurrent modification issues
-     */
-    @Version
-    @Column(name = "version")
-    private Long version;
 
     /**
      * Check if entity is soft deleted
