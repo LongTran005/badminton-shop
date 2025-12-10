@@ -2,9 +2,8 @@ package com.badmintonshop.config;
 
 import com.badmintonshop.security.CustomAuthenticationFailureHandler;
 import com.badmintonshop.security.CustomUserDetailsService;
-// TODO: Uncomment when OAuth2 is configured
-// import com.badmintonshop.security.OAuth2UserService;
-// import com.badmintonshop.security.OAuth2SuccessHandler;
+import com.badmintonshop.security.OAuth2UserService;
+import com.badmintonshop.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,9 +37,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final CustomAuthenticationFailureHandler authenticationFailureHandler;
-    // TODO: Uncomment when OAuth2 is configured
-    // private final OAuth2UserService oAuth2UserService;
-    // private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final DataSource dataSource;
 
     /**
@@ -161,15 +159,14 @@ public class SecurityConfig {
                 .usernameParameter("email")
                 .passwordParameter("password")
             )
-            // TODO: Enable OAuth2 login once Google Client ID/Secret are configured in application.properties
-            // .oauth2Login(oauth2 -> oauth2
-            //     .loginPage("/login")
-            //     .userInfoEndpoint(userInfo -> userInfo
-            //         .userService(oAuth2UserService)
-            //     )
-            //     .successHandler(oAuth2SuccessHandler)
-            //     .failureUrl("/login?oauth2_error=true")
-            // )
+            .oauth2Login(oauth2 -> oauth2
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo
+                    .userService(oAuth2UserService)
+                )
+                .successHandler(oAuth2SuccessHandler)
+                .failureUrl("/login?oauth2_error=true")
+            )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/?logout=true")

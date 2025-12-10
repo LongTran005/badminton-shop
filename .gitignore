@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs ###
+logs/
+*.log
+
+### Sensitive files - NEVER commit these ###
+**/application-local.properties
+**/application-secrets.properties
+**/secrets.properties
+.env
+*.env

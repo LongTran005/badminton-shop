@@ -81,7 +81,9 @@ public class EmailService {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         
-        helper.setFrom(fromEmail);
+        // Format: "Badminton Shop <email@gmail.com>"
+        String fromWithName = String.format("%s <%s>", fromName, fromEmail);
+        helper.setFrom(fromWithName);
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlContent, true);
