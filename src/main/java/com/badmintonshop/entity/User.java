@@ -95,7 +95,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
+    private UserStatus status = UserStatus.active;
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
@@ -156,7 +156,7 @@ public class User extends BaseEntity {
     }
 
     public boolean isActive() {
-        return status == UserStatus.ACTIVE;
+        return status == UserStatus.active;
     }
 
     public void recordLogin() {
@@ -164,10 +164,10 @@ public class User extends BaseEntity {
     }
 
     public boolean isBanned() {
-        return status == UserStatus.BANNED;
+        return status == UserStatus.banned;
     }
 
     public boolean isLocked() {
-        return status == UserStatus.LOCKED;
+        return status == UserStatus.locked;
     }
 }
