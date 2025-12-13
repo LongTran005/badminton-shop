@@ -47,4 +47,31 @@ public class AdminController {
     public String accessDenied() {
         return "error/403";
     }
+
+    /**
+     * System Settings page
+     */
+    @GetMapping("/settings")
+    public String settingsPage() {
+        log.info("Loading admin settings page");
+        return "admin/settings";
+    }
+
+    /**
+     * Email Templates page
+     */
+    @GetMapping("/email-templates")
+    public String emailTemplatesPage() {
+        log.info("Loading admin email templates page");
+        return "admin/email-templates";
+    }
+
+    /**
+     * Activity Logs page
+     */
+    @GetMapping("/activity-logs")
+    public String activityLogsPage() {
+        log.info("Loading admin activity logs page");
+        return "admin/activity-logs";
+    }
 }

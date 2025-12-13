@@ -23,11 +23,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                                         AuthenticationException exception) throws IOException, ServletException {
         
         String redirectUrl = "/login?error=true";
-<<<<<<< HEAD
-        
-        if (exception instanceof EmailNotVerifiedException) {
-            EmailNotVerifiedException emailException = (EmailNotVerifiedException) exception;
-=======
 
         // Check if the exception or its cause is EmailNotVerifiedException
         if (exception instanceof EmailNotVerifiedException || (exception.getCause() instanceof EmailNotVerifiedException)) {
@@ -35,7 +30,6 @@ public class CustomAuthenticationFailureHandler extends SimpleUrlAuthenticationF
                     ? (EmailNotVerifiedException) exception 
                     : (EmailNotVerifiedException) exception.getCause();
             
->>>>>>> pr-user-management
             String email = URLEncoder.encode(emailException.getEmail(), StandardCharsets.UTF_8);
             redirectUrl = "/verification-required?email=" + email;
         }

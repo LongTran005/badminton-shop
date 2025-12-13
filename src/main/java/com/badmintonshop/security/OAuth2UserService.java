@@ -59,7 +59,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
                     .avatarUrl(picture)
                     .passwordHash("") // No password for OAuth users
                     .isEmailVerified(true)
-                    .status(UserStatus.active)
+                    .status(UserStatus.ACTIVE)
                     .build();
             userRepository.save(user);
             log.info("Created new user from OAuth2: {}", email);
