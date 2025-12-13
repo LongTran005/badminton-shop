@@ -8,6 +8,7 @@ import com.badmintonshop.entity.enums.UserStatus;
 import com.badmintonshop.exception.BadRequestException;
 import com.badmintonshop.exception.ResourceNotFoundException;
 import com.badmintonshop.repository.UserRepository;
+import com.badmintonshop.security.CustomOAuth2User;
 import com.badmintonshop.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -142,6 +143,9 @@ public class AuthService {
 
         if (authentication.getPrincipal() instanceof CustomUserDetails userDetails) {
             Long userId = userDetails.getUser().getUserId();
+            return userRepository.findById(userId);
+        } else if (authentication.getPrincipal() instanceof CustomOAuth2User oauth2User) {
+            Long userId = oauth2User.getUser().getUserId();
             return userRepository.findById(userId);
         }
 

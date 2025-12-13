@@ -53,7 +53,7 @@ public class UserAddress {
     @Enumerated(EnumType.STRING)
     @Column(name = "address_type")
     @Builder.Default
-    private AddressType addressType = AddressType.HOME;
+    private AddressType addressType = AddressType.home;
 
     // Helper method
     public String getFullAddress() {

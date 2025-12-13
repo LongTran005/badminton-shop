@@ -2,7 +2,10 @@ package com.badmintonshop.config;
 
 import com.badmintonshop.security.CustomAuthenticationFailureHandler;
 import com.badmintonshop.security.CustomUserDetailsService;
+<<<<<<< HEAD
 import com.badmintonshop.security.StaffUserDetailsService;
+=======
+>>>>>>> pr-user-management
 import com.badmintonshop.security.OAuth2UserService;
 import com.badmintonshop.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +41,10 @@ import java.util.List;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+<<<<<<< HEAD
     private final StaffUserDetailsService staffUserDetailsService;
+=======
+>>>>>>> pr-user-management
     private final CustomAuthenticationFailureHandler authenticationFailureHandler;
     private final OAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -72,7 +78,7 @@ public class SecurityConfig {
         JdbcTokenRepositoryImpl tokenRepository = new JdbcTokenRepositoryImpl();
         tokenRepository.setDataSource(dataSource);
         // Create table if not exists - set to false in production
-        // tokenRepository.setCreateTableOnStartup(true);
+        //tokenRepository.setCreateTableOnStartup(true);
         return tokenRepository;
     }
 

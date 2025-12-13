@@ -73,7 +73,8 @@
                         <span sec:authentication="principal.fullName">User</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Tài khoản</a></li>
+                        <li><a class="dropdown-item" th:href="@{/users/profile}"><i class="fas fa-user me-2"></i>Tài
+                                khoản</a></li>
                         <li><a class="dropdown-item" href="#"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng</a></li>
                         <li>
                             <hr class="dropdown-divider">

@@ -28,11 +28,11 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByEmailAndDeletedAtIsNull(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản với email: " + email));
 
-        if (user.getStatus() == UserStatus.BANNED) {
+        if (user.getStatus() == UserStatus.banned) {
             throw new UsernameNotFoundException("Tài khoản đã bị khóa vĩnh viễn");
         }
 
-        if (user.getStatus() == UserStatus.LOCKED) {
+        if (user.getStatus() == UserStatus.locked) {
             throw new UsernameNotFoundException("Tài khoản đang bị tạm khóa");
         }
 
