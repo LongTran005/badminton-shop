@@ -4,6 +4,7 @@ import com.badmintonshop.entity.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Where;
+import org.hibernate.annotations.ColumnTransformer;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -56,6 +57,7 @@ public class User extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gender")
+    @ColumnTransformer(read = "UPPER(gender)")
     private Gender gender;
 
     // OAuth Integration
@@ -73,10 +75,12 @@ public class User extends BaseEntity {
     // Playing Profile (Đặc thù cầu lông - dùng cho tư vấn)
     @Enumerated(EnumType.STRING)
     @Column(name = "playing_style")
+    @ColumnTransformer(read = "UPPER(playing_style)")
     private PlayingStyle playingStyle;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "skill_level")
+    @ColumnTransformer(read = "UPPER(skill_level)")
     private SkillLevel skillLevel;
 
     @Column(name = "preferred_racket_weight", length = 10)
@@ -95,7 +99,7 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
+    private UserStatus status = UserStatus.active;
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
@@ -156,7 +160,7 @@ public class User extends BaseEntity {
     }
 
     public boolean isActive() {
-        return status == UserStatus.ACTIVE;
+        return status == UserStatus.active;
     }
 
     public void recordLogin() {
@@ -164,10 +168,10 @@ public class User extends BaseEntity {
     }
 
     public boolean isBanned() {
-        return status == UserStatus.BANNED;
+        return status == UserStatus.banned;
     }
 
     public boolean isLocked() {
-        return status == UserStatus.LOCKED;
+        return status == UserStatus.locked;
     }
 }
