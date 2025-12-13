@@ -1,11 +1,10 @@
 package com.badmintonshop.entity.enums;
 
 /**
- * User Status - Values must match MySQL ENUM exactly (lowercase)
+ * User Status - Values must match MySQL ENUM exactly (UPPERCASE)
  */
 public enum UserStatus {
-    active,      // Hoạt động bình thường
-    banned,      // Cấm vĩnh viễn (vi phạm TOS)
-    locked       // Tạm khóa (nhập sai pass nhiều lần)
+    ACTIVE,      // Hoạt động bình thường
+    BANNED,      // Cấm vĩnh viễn (vi phạm TOS)
+    LOCKED       // Tạm khóa (nhập sai pass nhiều lần)
 }
-

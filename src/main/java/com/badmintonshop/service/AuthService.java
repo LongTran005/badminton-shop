@@ -70,7 +70,7 @@ public class AuthService {
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .isEmailVerified(false)
-                .status(UserStatus.active)
+                .status(UserStatus.ACTIVE)
                 .build();
 
         userRepository.save(user);

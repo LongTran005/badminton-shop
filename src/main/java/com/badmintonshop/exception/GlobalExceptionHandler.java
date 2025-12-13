@@ -71,6 +71,57 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle Setting Not Found Exception
+     */
+    @ExceptionHandler(SettingNotFoundException.class)
+    public Object handleSettingNotFound(SettingNotFoundException ex, HttpServletRequest request) {
+        log.warn("Setting not found: {}", ex.getMessage());
+        
+        if (isApiRequest(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()));
+        }
+        
+        ModelAndView mav = new ModelAndView("error/404");
+        mav.addObject("message", ex.getMessage());
+        return mav;
+    }
+
+    /**
+     * Handle Email Template Not Found Exception
+     */
+    @ExceptionHandler(EmailTemplateNotFoundException.class)
+    public Object handleEmailTemplateNotFound(EmailTemplateNotFoundException ex, HttpServletRequest request) {
+        log.warn("Email template not found: {}", ex.getMessage());
+        
+        if (isApiRequest(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()));
+        }
+        
+        ModelAndView mav = new ModelAndView("error/404");
+        mav.addObject("message", ex.getMessage());
+        return mav;
+    }
+
+    /**
+     * Handle Staff Not Found Exception
+     */
+    @ExceptionHandler(StaffNotFoundException.class)
+    public Object handleStaffNotFound(StaffNotFoundException ex, HttpServletRequest request) {
+        log.warn("Staff not found: {}", ex.getMessage());
+        
+        if (isApiRequest(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(createErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI()));
+        }
+        
+        ModelAndView mav = new ModelAndView("error/404");
+        mav.addObject("message", ex.getMessage());
+        return mav;
+    }
+
+    /**
      * Handle Bad Request Exception
      */
     @ExceptionHandler(BadRequestException.class)

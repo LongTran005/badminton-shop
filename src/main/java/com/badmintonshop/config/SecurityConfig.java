@@ -2,6 +2,7 @@ package com.badmintonshop.config;
 
 import com.badmintonshop.security.CustomAuthenticationFailureHandler;
 import com.badmintonshop.security.CustomUserDetailsService;
+import com.badmintonshop.security.StaffUserDetailsService;
 import com.badmintonshop.security.OAuth2UserService;
 import com.badmintonshop.security.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -9,8 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.sql.DataSource;
+import java.util.List;
 
 /**
  * Security Configuration
@@ -36,6 +38,7 @@ import javax.sql.DataSource;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final StaffUserDetailsService staffUserDetailsService;
     private final CustomAuthenticationFailureHandler authenticationFailureHandler;
     private final OAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -50,22 +53,15 @@ public class SecurityConfig {
     }
 
     /**
-     * Authentication provider
+     * Customer AuthenticationManager bean - needed for AuthService AJAX login
+     * Creates provider inline to avoid AOP proxy recursion
      */
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
-
-    /**
-     * Authentication manager
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
-        return authConfig.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(PasswordEncoder encoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(encoder);
+        return new ProviderManager(provider);
     }
 
     /**
@@ -84,14 +80,25 @@ public class SecurityConfig {
      * Admin Security Chain
      * - Higher priority (Order 1)
      * - Only matches /admin/** paths
+     * - Uses StaffUserDetailsService
      */
     @Bean
     @Order(1)
-    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain adminSecurityFilterChain(HttpSecurity http, PasswordEncoder encoder) throws Exception {
+        // Create provider directly to avoid AOP proxy issues
+        DaoAuthenticationProvider staffProvider = new DaoAuthenticationProvider();
+        staffProvider.setUserDetailsService(staffUserDetailsService);
+        staffProvider.setPasswordEncoder(encoder);
+        
+        // Create a separate AuthenticationManager for admin
+        AuthenticationManager adminAuthManager = new ProviderManager(staffProvider);
+        
         http
             .securityMatcher("/admin/**")
+            .authenticationManager(adminAuthManager)
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/admin/login", "/admin/forgot-password").permitAll()
+                .requestMatchers("/admin/api/**").hasAnyRole("ADMIN", "STAFF")
                 .requestMatchers("/admin/**").hasAnyRole("ADMIN", "STAFF")
             )
             .formLogin(form -> form
@@ -126,8 +133,16 @@ public class SecurityConfig {
      */
     @Bean
     @Order(2)
-    public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain customerSecurityFilterChain(HttpSecurity http, PasswordEncoder encoder) throws Exception {
+        // Create provider directly to avoid AOP proxy issues
+        DaoAuthenticationProvider customerProvider = new DaoAuthenticationProvider();
+        customerProvider.setUserDetailsService(userDetailsService);
+        customerProvider.setPasswordEncoder(encoder);
+        
         http
+            // Use authenticationProvider instead of authenticationManager
+            // to preserve OAuth2 authentication capability
+            .authenticationProvider(customerProvider)
             .authorizeHttpRequests(auth -> auth
                 // Public pages
                 .requestMatchers(

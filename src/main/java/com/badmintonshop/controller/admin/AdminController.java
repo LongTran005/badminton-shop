@@ -1,0 +1,50 @@
+package com.badmintonshop.controller.admin;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+/**
+ * Admin controller for page routing
+ */
+@Controller
+@RequestMapping("/admin")
+@RequiredArgsConstructor
+@Slf4j
+public class AdminController {
+
+    /**
+     * Admin login page
+     */
+    @GetMapping("/login")
+    public String loginPage() {
+        return "admin/login";
+    }
+
+    /**
+     * Admin dashboard
+     */
+    @GetMapping({"/", "/dashboard"})
+    public String dashboard(Model model) {
+        log.info("Loading admin dashboard");
+        
+        // TODO: Add real stats from services
+        model.addAttribute("totalOrders", 0);
+        model.addAttribute("totalRevenue", 0);
+        model.addAttribute("totalCustomers", 0);
+        model.addAttribute("pendingStringing", 0);
+        
+        return "admin/dashboard";
+    }
+
+    /**
+     * Access denied page
+     */
+    @GetMapping("/access-denied")
+    public String accessDenied() {
+        return "error/403";
+    }
+}
