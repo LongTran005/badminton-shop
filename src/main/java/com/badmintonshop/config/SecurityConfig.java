@@ -115,6 +115,10 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID", "remember-me")
             )
+            // Disable CSRF for API endpoints (REST API)
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/admin/api/**")
+            )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/admin/access-denied")
             )
