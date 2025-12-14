@@ -74,4 +74,22 @@ public class AdminController {
         log.info("Loading admin activity logs page");
         return "admin/activity-logs";
     }
+
+    /**
+     * Staff Management page
+     */
+    @GetMapping("/staff")
+    public String staffPage() {
+        log.info("Loading admin staff management page");
+        return "admin/staff";
+    }
+
+    /**
+     * Users (Customers) Management page
+     */
+    @GetMapping("/users")
+    public String usersPage() {
+        log.info("Loading admin users management page");
+        return "admin/users";
+    }
 }

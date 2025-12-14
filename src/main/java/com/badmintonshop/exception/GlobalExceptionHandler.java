@@ -32,8 +32,11 @@ public class GlobalExceptionHandler {
     private boolean isApiRequest(HttpServletRequest request) {
         String uri = request.getRequestURI();
         String accept = request.getHeader("Accept");
+        String contentType = request.getContentType();
         return uri.startsWith("/api/") || 
-               (accept != null && accept.contains("application/json"));
+               uri.contains("/api/") ||
+               (accept != null && accept.contains("application/json")) ||
+               (contentType != null && contentType.contains("application/json"));
     }
 
     /**
@@ -155,6 +158,7 @@ public class GlobalExceptionHandler {
         if (isApiRequest(request)) {
             Map<String, Object> response = createErrorResponse(
                     HttpStatus.BAD_REQUEST, "Validation failed", request.getRequestURI());
+            response.put("success", false);
             response.put("errors", errors);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
@@ -162,6 +166,25 @@ public class GlobalExceptionHandler {
         ModelAndView mav = new ModelAndView("error/400");
         mav.addObject("message", "Dữ liệu không hợp lệ");
         mav.addObject("errors", errors);
+        return mav;
+    }
+
+    /**
+     * Handle IllegalArgumentException
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public Object handleIllegalArgument(IllegalArgumentException ex, HttpServletRequest request) {
+        log.warn("Illegal argument: {}", ex.getMessage());
+        
+        if (isApiRequest(request)) {
+            Map<String, Object> response = createErrorResponse(
+                    HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+            response.put("success", false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+        
+        ModelAndView mav = new ModelAndView("error/400");
+        mav.addObject("message", ex.getMessage());
         return mav;
     }
 

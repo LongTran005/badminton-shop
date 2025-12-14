@@ -34,7 +34,6 @@ public class AuditService {
      * Log a staff activity
      */
     @Transactional
-    @Async("emailExecutor") // Reuse async executor
     public void logActivity(Staff staff, 
                            ActivityAction action, 
                            String entityType,
@@ -44,6 +43,9 @@ public class AuditService {
                            Object newValues,
                            HttpServletRequest request) {
         try {
+            String ipAddress = getClientIp(request);
+            String userAgent = request != null ? request.getHeader("User-Agent") : null;
+            
             StaffActivityLog activityLog = StaffActivityLog.builder()
                     .staff(staff)
                     .action(action)
@@ -52,8 +54,8 @@ public class AuditService {
                     .description(description)
                     .oldValues(toJson(oldValues))
                     .newValues(toJson(newValues))
-                    .ipAddress(getClientIp(request))
-                    .userAgent(request != null ? request.getHeader("User-Agent") : null)
+                    .ipAddress(ipAddress)
+                    .userAgent(userAgent)
                     .createdAt(LocalDateTime.now())
                     .build();
 
