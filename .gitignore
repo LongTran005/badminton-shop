@@ -4,11 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Logs ###
-*.log
-logs/
-badminton-shop.log
-
 ### STS ###
 .apt_generated
 .classpath
