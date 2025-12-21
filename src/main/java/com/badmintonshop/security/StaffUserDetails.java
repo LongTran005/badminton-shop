@@ -31,6 +31,9 @@ public class StaffUserDetails implements UserDetails {
             case SUPER_ADMIN:
                 role = "ROLE_ADMIN";
                 break;
+            case STRINGING_STAFF:
+                role = "ROLE_STRINGING_STAFF";
+                break;
             default:
                 role = "ROLE_STAFF";
                 break;

@@ -115,6 +115,15 @@
                 <span>Nhân viên</span>
             </a>
         </div>
+
+        <!-- Stringing Staff (Only Visible for ROLE_STRINGING_STAFF) -->
+        <div class="nav-section" sec:authorize="hasRole('STRINGING_STAFF')">
+            <div class="nav-section-title">Nhân viên đan vợt</div>
+            <a th:href="@{/staff/stringing}" class="sidebar-link" data-page="stringing-dashboard">
+                <i class="fas fa-tasks"></i>
+                <span>Công việc của tôi</span>
+            </a>
+        </div>
     </nav>
 
     <!-- Sidebar Footer -->

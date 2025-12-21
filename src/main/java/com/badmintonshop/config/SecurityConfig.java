@@ -98,18 +98,13 @@ public class SecurityConfig {
                 .authenticationManager(adminAuthManager)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/login", "/admin/forgot-password").permitAll()
-                        .requestMatchers("/admin/api/**").hasAnyRole("ADMIN", "STAFF")
-                        .requestMatchers("/admin/**", "/staff/**").hasAnyRole("ADMIN", "STAFF"))
+                        .requestMatchers("/admin/api/**").hasAnyRole("ADMIN", "STAFF", "STRINGING_STAFF")
+                        .requestMatchers("/admin/**", "/staff/**").hasAnyRole("ADMIN", "STAFF", "STRINGING_STAFF"))
                 .formLogin(form -> form
                         .loginPage("/admin/login")
                         .loginProcessingUrl("/admin/login")
                         .successHandler((request, response, authentication) -> {
-                            if (authentication.getAuthorities().stream()
-                                    .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                                response.sendRedirect("/admin/dashboard");
-                            } else {
-                                response.sendRedirect("/staff/stringing");
-                            }
+                            response.sendRedirect("/admin/dashboard");
                         })
                         .failureUrl("/admin/login?error=true")
                         .usernameParameter("email")
