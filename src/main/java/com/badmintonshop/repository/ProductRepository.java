@@ -1,0 +1,21 @@
+package com.badmintonshop.repository;
+
+import com.badmintonshop.entity.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    Optional<Product> findBySlug(String slug);
+
+    boolean existsBySlug(String slug);
+
+    @Query("SELECT p FROM Product p WHERE p.status = 'ACTIVE'")
+    Page<Product> findAllActive(Pageable pageable);
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layouts/admin}">
+
+<head>
+    <title>Quản Lý Đan Vợt - Admin</title>
+</head>
+
+<body>
+
+    <div layout:fragment="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Quản Lý Đơn Đan Vợt</h1>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4">Mã Đơn</th>
+                                <th>Sản Phẩm</th>
+                                <th>Chi Tiết Đan</th>
+                                <th>Trạng Thái</th>
+                                <th>Thợ Đan</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="item : ${items}">
+                                <td class="ps-4 fw-bold" th:text="${item.order.orderNumber}">#ORD-123</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://via.placeholder.com/40" class="rounded me-2" alt="img">
+                                        <div>
+                                            <div class="fw-medium" th:text="${item.productName}">Vợt Yonex</div>
+                                            <small class="text-muted" th:text="${item.variantName}">4U</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <span class="d-block">Lực căng: <strong th:text="${item.tension} + ' lbs'">24
+                                                lbs</strong></span>
+                                        <span class="d-block" th:text="${item.stringName}">BG 65</span>
+                                        <span class="d-block text-muted" th:text="${item.stringingServiceName}">Đan
+                                            máy</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill"
+                                        th:classappend="${item.stringingStatus.name() == 'PENDING' ? 'bg-warning text-dark' : 
+                                                           (item.stringingStatus.name() == 'ASSIGNED' ? 'bg-info text-white' : 
+                                                           (item.stringingStatus.name() == 'COMPLETED' ? 'bg-success' : 'bg-secondary'))}"
+                                        th:text="${item.stringingStatus}">PENDING</span>
+                                </td>
+                                <td>
+                                    <span th:if="${item.assignedStaff}" th:text="${item.assignedStaff.fullName}"
+                                        class="fw-medium">Nguyễn Văn A</span>
+                                    <span th:unless="${item.assignedStaff}" class="text-muted fst-italic">Chưa
+                                        gán</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary"
+                                        th:if="${item.stringingStatus.name() == 'PENDING'}"
+                                        th:onclick="'openAssignModal(' + ${item.orderItemId} + ')'">
+                                        <i class="fas fa-user-plus me-1"></i>Assign
+                                    </button>
+                                    <form th:if="${item.stringingStatus.name() == 'COMPLETED'}"
+                                        th:action="@{/admin/stringing/qc-approve}" method="post" class="d-inline">
+                                        <input type="hidden" name="orderItemId" th:value="${item.orderItemId}">
+                                        <button class="btn btn-sm btn-outline-success" type="submit">
+                                            <i class="fas fa-check-double me-1"></i>QC OK
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assign Modal -->
+        <div class="modal fade" id="assignModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Chọn Thợ Đan</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/admin/stringing/assign}" method="post">
+                        <div class="modal-body">
+                            <input type="hidden" name="orderItemId" id="assignOrderItemId">
+
+                            <div class="list-group">
+                                <label class="list-group-item d-flex gap-2" th:each="staff : ${staffs}">
+                                    <input class="form-check-input flex-shrink-0" type="radio" name="staffId"
+                                        th:value="${staff.staffId}"
+                                        th:disabled="${staff.dailyStringingCapacity != null and 5 >= staff.dailyStringingCapacity}">
+                                    <span>
+                                        <span class="fw-bold" th:text="${staff.fullName}">Nguyen Van A</span>
+                                        <span class="d-block small text-muted">
+                                            Capacity: <span th:text="${staff.dailyStringingCapacity}">10</span>
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Xác nhận</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function openAssignModal(orderItemId) {
+                document.getElementById('assignOrderItemId').value = orderItemId;
+                new bootstrap.Modal(document.getElementById('assignModal')).show();
+            }
+        </script>
+    </div>
+
+</body>
+
+</html>

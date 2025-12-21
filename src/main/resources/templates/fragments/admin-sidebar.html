@@ -82,6 +82,19 @@
             </a>
         </div>
 
+        <!-- Warranty & Exchange -->
+        <div class="nav-section">
+            <div class="nav-section-title">Bảo hành & Đổi trả</div>
+            <a th:href="@{/admin/exchanges}" class="sidebar-link" data-page="exchanges">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Yêu cầu Đổi hàng</span>
+            </a>
+            <a th:href="@{/admin/warranties}" class="sidebar-link" data-page="warranties">
+                <i class="fas fa-shield-alt"></i>
+                <span>Yêu cầu Bảo hành</span>
+            </a>
+        </div>
+
         <!-- Settings -->
         <div class="nav-section">
             <div class="nav-section-title">Cài đặt</div>
@@ -118,7 +131,9 @@
     document.addEventListener('DOMContentLoaded', function () {
         const path = window.location.pathname;
         const links = document.querySelectorAll('.sidebar-link');
+        const sidebarNav = document.querySelector('.sidebar-nav'); // Scrollable container
 
+        // 1. Set Active Link
         links.forEach(function (link) {
             const page = link.getAttribute('data-page');
             if (page && path.includes('/admin/' + page)) {
@@ -131,6 +146,28 @@
         if (activeLinks.length === 0 && path === '/admin/dashboard') {
             const dashboardLink = document.querySelector('[data-page="dashboard"]');
             if (dashboardLink) dashboardLink.classList.add('active');
+        }
+
+        // 2. Restore Scroll Position
+        if (sidebarNav) {
+            const savedScroll = localStorage.getItem('sidebarNavScrollTop');
+            if (savedScroll) {
+                sidebarNav.scrollTop = parseInt(savedScroll, 10);
+            } else if (activeLinks.length > 0) {
+                // Optional: scroll active into view
+                const activeLink = activeLinks[0];
+                if (activeLink.offsetTop > sidebarNav.clientHeight - 100) {
+                    sidebarNav.scrollTop = activeLink.offsetTop - 100;
+                }
+            }
+
+            // 3. Save Scroll Position
+            const saveScroll = () => {
+                localStorage.setItem('sidebarNavScrollTop', sidebarNav.scrollTop);
+            };
+
+            sidebarNav.addEventListener('scroll', saveScroll);
+            links.forEach(link => link.addEventListener('click', saveScroll));
         }
     });
 </script>

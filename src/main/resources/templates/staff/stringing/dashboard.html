@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Dashboard - Đan Vợt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+    <div class="container py-5">
+        <h2 class="mb-4 fw-bold">Công Việc Của Tôi</h2>
+
+        <div class="row">
+            <!-- Assigned (To Do) -->
+            <div class="col-md-6">
+                <h4 class="text-primary mb-3"><i class="fas fa-list-ul me-2"></i>Cần Thực Hiện</h4>
+                <div class="card mb-3 border-0 shadow-sm" th:each="item : ${assignedItems}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold" th:text="${item.order.orderNumber}">#ORD-123</span>
+                            <span class="badge bg-info">ASSIGNED</span>
+                        </div>
+                        <h5 class="card-title" th:text="${item.productName}">Vợt Yonex Astrox</h5>
+                        <p class="card-text text-muted mb-3">
+                            Lực căng: <strong th:text="${item.tension} + ' lbs'">24 lbs</strong><br>
+                            Cước: <span th:text="${item.stringName}">BG 65</span><br>
+                            Note: <span th:text="${item.stringingNotes}" class="fst-italic">Không</span>
+                        </p>
+                        <form th:action="@{/staff/stringing/start}" method="post">
+                            <input type="hidden" name="orderItemId" th:value="${item.orderItemId}">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-play me-2"></i>Bắt đầu đan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${assignedItems.empty}" class="alert alert-info">Chưa có đơn hàng mới</div>
+            </div>
+
+            <!-- In Progress -->
+            <div class="col-md-6">
+                <h4 class="text-warning mb-3"><i class="fas fa-spinner fa-spin me-2"></i>Đang Đan</h4>
+                <div class="card mb-3 border-0 shadow-sm border-start border-4 border-warning"
+                    th:each="item : ${inProgressItems}">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="fw-bold" th:text="${item.order.orderNumber}">#ORD-123</span>
+                            <span class="badge bg-warning text-dark">IN PROGRESS</span>
+                        </div>
+                        <h5 class="card-title" th:text="${item.productName}">Vợt Yonex Astrox</h5>
+                        <p class="card-text text-muted mb-3">
+                            <i class="far fa-clock me-1"></i> Bắt đầu:
+                            <span th:text="${#temporals.format(item.stringingStartedAt, 'HH:mm')}">10:00</span>
+                        </p>
+                        <form th:action="@{/staff/stringing/complete}" method="post">
+                            <input type="hidden" name="orderItemId" th:value="${item.orderItemId}">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-check me-2"></i>Hoàn thành
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div th:if="${inProgressItems.empty}" class="alert alert-light text-muted border-dashed">Không có đơn
+                    đang xử lý</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

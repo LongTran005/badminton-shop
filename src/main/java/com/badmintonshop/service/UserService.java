@@ -40,7 +40,7 @@ public class UserService {
      */
     public Page<UserResponse> getAll(String search, UserStatus status, Boolean verified, Pageable pageable) {
         log.debug("Fetching users with filters - search: {}, status: {}, verified: {}", search, status, verified);
-        
+
         return userRepository.findWithFilters(search, status, verified, pageable)
                 .map(UserResponse::fromEntity);
     }
@@ -50,14 +50,14 @@ public class UserService {
      */
     public UserResponse getById(Long id) {
         log.debug("Fetching user by id: {}", id);
-        
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-        
+
         // Get stats
         int totalOrders = user.getOrders() != null ? user.getOrders().size() : 0;
         int totalReviews = user.getReviews() != null ? user.getReviews().size() : 0;
-        
+
         return UserResponse.fromEntityWithStats(user, totalOrders, totalReviews);
     }
 
@@ -67,13 +67,13 @@ public class UserService {
     @Transactional
     public UserResponse updateStatus(Long id, UserStatus status) {
         log.info("Updating status for user {} to {}", id, status);
-        
+
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
-        
+
         user.setStatus(status);
         User saved = userRepository.save(user);
-        
+
         log.info("Updated status for user: {}", id);
         return UserResponse.fromEntity(saved);
     }
@@ -83,33 +83,33 @@ public class UserService {
      */
     public UserStatisticsResponse getStatistics() {
         log.debug("Generating user statistics");
-        
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
         LocalDateTime startOfWeek = LocalDate.now().minusDays(7).atStartOfDay();
         LocalDateTime startOfMonth = LocalDate.now().minusDays(30).atStartOfDay();
         LocalDateTime start30Days = now.minusDays(30);
-        
+
         // Basic counts
         long totalUsers = userRepository.count();
         long activeUsers = userRepository.countByStatusAndDeletedAtIsNull(UserStatus.ACTIVE);
         long bannedUsers = userRepository.countByStatusAndDeletedAtIsNull(UserStatus.BANNED);
         long lockedUsers = userRepository.countByStatusAndDeletedAtIsNull(UserStatus.LOCKED);
         long verifiedUsers = userRepository.countVerifiedUsers();
-        
+
         // Today
         long newUsersToday = userRepository.countRegisteredBetween(startOfToday, now);
         long activeUsersToday = userRepository.countActiveUsersBetween(startOfToday, now);
-        
+
         // This week and month
         long newUsersThisWeek = userRepository.countRegisteredBetween(startOfWeek, now);
         long newUsersThisMonth = userRepository.countRegisteredBetween(startOfMonth, now);
-        
+
         // Registration trend (last 30 days)
         List<Object[]> dailyData = userRepository.countDailyRegistrations(start30Days);
         List<UserStatisticsResponse.DailyCount> registrationTrend = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        
+
         for (Object[] row : dailyData) {
             String date = row[0].toString();
             long count = ((Number) row[1]).longValue();
@@ -118,7 +118,7 @@ public class UserService {
                     .count(count)
                     .build());
         }
-        
+
         // Users by gender
         Map<String, Long> usersByGender = new HashMap<>();
         for (Object[] row : userRepository.countByGender()) {
@@ -126,7 +126,7 @@ public class UserService {
             long count = ((Number) row[1]).longValue();
             usersByGender.put(gender, count);
         }
-        
+
         // Users by skill level
         Map<String, Long> usersBySkillLevel = new HashMap<>();
         for (Object[] row : userRepository.countBySkillLevel()) {
@@ -134,7 +134,7 @@ public class UserService {
             long count = ((Number) row[1]).longValue();
             usersBySkillLevel.put(skill, count);
         }
-        
+
         return UserStatisticsResponse.builder()
                 .totalUsers(totalUsers)
                 .activeUsers(activeUsers)
@@ -156,15 +156,16 @@ public class UserService {
      */
     public byte[] exportToCsv(String search, UserStatus status) {
         log.info("Exporting users to CSV - search: {}, status: {}", search, status);
-        
+
         List<User> users = userRepository.findAllForExport(search, status);
-        
+
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintWriter writer = new PrintWriter(outputStream);
-        
+
         // CSV Header
-        writer.println("ID,Email,Full Name,Phone,Gender,Status,Email Verified,Playing Style,Skill Level,Last Login,Created At");
-        
+        writer.println(
+                "ID,Email,Full Name,Phone,Gender,Status,Email Verified,Playing Style,Skill Level,Last Login,Created At");
+
         // CSV Data
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (User user : users) {
@@ -179,17 +180,17 @@ public class UserService {
                     user.getPlayingStyle() != null ? user.getPlayingStyle().name() : "",
                     user.getSkillLevel() != null ? user.getSkillLevel().name() : "",
                     user.getLastLoginAt() != null ? user.getLastLoginAt().format(formatter) : "",
-                    user.getCreatedAt() != null ? user.getCreatedAt().format(formatter) : ""
-            ));
+                    user.getCreatedAt() != null ? user.getCreatedAt().format(formatter) : ""));
         }
-        
+
         writer.flush();
         log.info("Exported {} users to CSV", users.size());
         return outputStream.toByteArray();
     }
 
     private String escapeQuotes(String value) {
-        if (value == null) return "";
+        if (value == null)
+            return "";
         return value.replace("\"", "\"\"");
     }
 
